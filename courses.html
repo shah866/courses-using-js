@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <script src="lab3.js"></script>
+
+<style>
+.flex-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background-color: DodgerBlue;
+  flex-direction: column;
+}
+
+.flex-container > div {
+  background-color: #f1f1f1;
+  margin:5px;
+  padding: 3px;
+}
+
+.edit{
+    background-color: #4808fa;
+    margin: 3px;
+    margin-left: 50px;
+    padding: 3px;
+}
+.confirm{
+    background-color: #0cdf4b;
+    margin: 3px;
+    padding: 3px;
+}
+.delete{
+    background-color: #e90606;
+    margin: 3px;
+    padding: 3px;
+}
+</style>
+</head>
+<body>
+
+  <div id="mm" class="flex-container">
+    <div> <h1>LAB3</h1>   </div>
+   <input type="text" id="cname" name="fname" value="shahd"><br>
+     <button onclick="addNewCourse(document.getElementById('cname').value)">ADD NEW </button>   <br><br>
+     
+ </div>
+  
+  <div id="dynamicDiv"></div>
+  <button onclick="saveToDatabase()"> add to database  </button>
+  
+ <script>
+  function fetchAndDisplayData() {
+
+    fetch('display.php')
+        .then(response => response.json())
+        .then(data => {
+             // Iterate over data and display each course
+            data.forEach(course => {
+              displayCourse(course);
+             console.log(course);
+
+             });
+        })
+        .catch(error => {
+            console.error('Error:', error);
+        });
+
+        function displayCourse(courseObj) {
+    const { name, isConfirmed } = courseObj;
+
+    // Check if the course already exists
+    if (data.some(course => course.name === name)) {
+        console.log('Course already exists:', name);
+        return; // Exit the function if the course already exists
+    }
+
+    const el = document.createElement('div');
+    const label = document.createElement('label');
+    label.textContent = name;
+
+    el.appendChild(label);
+
+    // Assign id and class to the div
+    el.id = name;
+    el.classList.add('course');
+
+    const ob =  courseObj;
+    data.push(ob); // Push the new course object to the data array
+    console.log(data); 
+    // Add buttons if the course is not confirmed
+    if (isConfirmed==0) {
+        const editBtn = document.createElement('button');
+        editBtn.innerHTML = "EDIT";
+        editBtn.classList.add('edit');
+        editBtn.addEventListener('click', () => {
+            var userInput = window.prompt("Please enter the course name:", name);
+            updateData(name, userInput);
+        });
+
+        const delBtn = document.createElement('button');
+        delBtn.innerHTML = "Delete";
+        delBtn.classList.add('delete');
+        delBtn.addEventListener('click', () => {
+            el.remove();
+            deleteCourse(name);
+        });
+
+        const confirmBtn = document.createElement('button');
+        confirmBtn.innerHTML = "Confirm";
+        confirmBtn.classList.add('confirm');
+        confirmBtn.onclick = function() {
+            el.removeChild(editBtn);
+            el.removeChild(delBtn);
+            el.removeChild(confirmBtn);
+            confirmCourse(name);
+        };
+
+        el.append(editBtn);
+        el.append(delBtn);
+        el.append(confirmBtn);
+    }
+
+    document.getElementById('mm').append(el);
+}
+
+}
+window.onload = fetchAndDisplayData;
+
+ </script>
+  
+  </body>
+  </html>
+
+
